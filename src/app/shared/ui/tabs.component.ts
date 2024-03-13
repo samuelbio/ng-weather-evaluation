@@ -1,12 +1,14 @@
 import {
     Component,
     ContentChildren,
-    EventEmitter,
+    EventEmitter, OnDestroy,
     Output,
     QueryList
 } from '@angular/core';
 import {TabComponent} from './tab.component';
 import {NgForOf} from '@angular/common';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import {Subject, Subscription} from 'rxjs';
 
 @Component({
     selector: 'app-tabs',
@@ -56,19 +58,28 @@ import {NgForOf} from '@angular/common';
     `
 })
 
-export class TabsComponent {
+export class TabsComponent implements OnDestroy {
     @ContentChildren(TabComponent) tabs: QueryList<TabComponent>;
     @Output() close: EventEmitter<number> = new EventEmitter<number>();
 
+    subscription: Subscription = new Subscription();
+
     ngAfterContentInit() {
-        this.tabs.changes.subscribe(
+        this.subscription =this.tabs.changes.subscribe(
             () => setTimeout(() => this.selectTab(this.tabs.first))
         )
-        setTimeout(() => this.selectTab(this.tabs.first))
+
+        if (this.tabs.length > 0) {
+            setTimeout(() => this.selectTab(this.tabs.first))
+        }
     }
 
     selectTab(tab: TabComponent) {
         this.tabs.toArray().forEach(t => t.active = false);
         tab.active = true;
+    }
+
+    ngOnDestroy() {
+        this.subscription.unsubscribe();
     }
 }

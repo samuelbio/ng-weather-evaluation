@@ -23,12 +23,9 @@ export class LocationService {
   }
 
   removeLocation(zipcode : string): void {
-    let index: number = this.locationsList().indexOf(zipcode);
-    if (index !== -1){
-      const location = this.locationsList();
-      location.splice(index, 1)
-      this.locationsList.set([...location])
-      localStorage.setItem(LOCATIONS, JSON.stringify(location));
-    }
+    this.locationsList.update(
+        (zipcodeList) => zipcodeList.filter((item) => item !== zipcode)
+    )
+    localStorage.setItem(LOCATIONS, JSON.stringify(this.locations()));
   }
 }

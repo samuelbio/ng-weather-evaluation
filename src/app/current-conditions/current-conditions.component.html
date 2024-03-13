@@ -1,11 +1,14 @@
-<app-tabs
-        (close)="removeLocation($event)"
->
-    <app-tab
-        *ngFor="let location of currentConditionsByZip()"
-        title="{{location.data.name}} ({{location.zip}})"
-        (click)="showForecast(location.zip)"
+
+@if (currentConditionsByZip().length > 0) {
+    <app-tabs
+            (close)="removeLocation($event)"
     >
-        <app-current-condition [location]="location"/>
-    </app-tab>
-</app-tabs>
+        <app-tab
+                *ngFor="let location of currentConditionsByZip()"
+                title="{{location.data.name}} ({{location.zip}})"
+                (click)="showForecast(location.zip)"
+        >
+            <app-current-condition [location]="location"/>
+        </app-tab>
+    </app-tabs>
+}
