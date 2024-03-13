@@ -32,7 +32,7 @@ export class WeatherCachingService<T> {
         return null;
     }
 
-    removeLocation(key: string): void {
+    deleteCache(key: string): void {
         const cacheKey = this.generateCacheKey(key);
         localStorage.removeItem(cacheKey)
     }

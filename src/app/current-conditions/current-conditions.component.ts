@@ -26,6 +26,17 @@ export class CurrentConditionsComponent {
   removeLocation(index: number): void {
     const zipCode: string = this.currentConditionsByZip()[index].zip;
     this.locationService.removeLocation(zipCode)
-    this.weatherCachingService.removeLocation(zipCode)
+    this.removeConditionZipCache(zipCode)
+    this.removeForecastCache(zipCode)
+  }
+
+  removeForecastCache(zipcode: string): void {
+    const key = this.weatherService.getForecastCacheKey(zipcode);
+    this.weatherCachingService.deleteCache(key)
+  }
+
+  removeConditionZipCache(zipcode: string): void {
+    const key = this.weatherService.getConditionsAndZipCacheKey(zipcode);
+    this.weatherCachingService.deleteCache(key)
   }
 }
