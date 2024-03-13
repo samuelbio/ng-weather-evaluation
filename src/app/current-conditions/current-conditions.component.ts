@@ -14,8 +14,8 @@ import {WeatherCachingService} from '../weather-caching.service';
 export class CurrentConditionsComponent {
 
   private router: Router = inject(Router);
-  public weatherService: WeatherService = inject(WeatherService);
-  public weatherCachingService: WeatherCachingService<any> = inject(WeatherCachingService);
+  private weatherService: WeatherService = inject(WeatherService);
+  private weatherCachingService: WeatherCachingService<ConditionsAndZip> = inject(WeatherCachingService);
   protected locationService: LocationService = inject(LocationService)
   protected currentConditionsByZip: Signal<ConditionsAndZip[]> = toSignal(this.weatherService.currentConditionsByZipCode$);
 

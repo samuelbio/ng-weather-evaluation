@@ -13,7 +13,7 @@ import {WeatherCachingService} from './weather-caching.service';
 @Injectable()
 export class WeatherService {
 
-  static URL: string = 'http://api.openweathermap.org/data/2.5';
+  static URL: string = 'https://api.openweathermap.org/data/2.5';
   static APPID: string = '5a4b2d457ecbef9eb2a71e480b947604';
 
   private httpClient: HttpClient = inject(HttpClient);
@@ -26,14 +26,15 @@ export class WeatherService {
           take(zipcodes.length),
           mergeMap(
               (zipcode: string) => {
-                const conditionsAndZipCached: ConditionsAndZip = this.weatherCachingService.getData(zipcode)
+                const conditionsAndZipCacheKey = this.getConditionsAndZipCacheKey(zipcode)
+                const conditionsAndZipCached: ConditionsAndZip = this.weatherCachingService.getData(conditionsAndZipCacheKey)
                 if (conditionsAndZipCached) {
                   return of(conditionsAndZipCached)
                 }
                 return this.addCurrentConditions(zipcode).pipe(
                     map((data: CurrentConditions): ConditionsAndZip => {
                       const conditionsAndZip: ConditionsAndZip = {zip: zipcode, data}
-                      this.weatherCachingService.cacheData(zipcode, conditionsAndZip)
+                      this.weatherCachingService.cacheData(conditionsAndZipCacheKey, conditionsAndZip)
                       return conditionsAndZip
                     })
                 )
@@ -53,6 +54,14 @@ export class WeatherService {
     // Here we make a request to get the forecast data from the API. Note the use of backticks and an expression to insert the zipcode
     return this.httpClient.get<Forecast>(`${WeatherService.URL}/forecast/daily?zip=${zipcode},us&units=imperial&cnt=5&APPID=${WeatherService.APPID}`);
 
+  }
+
+  getConditionsAndZipCacheKey(zipcode: string): string {
+      return `conditions_and_zip_${zipcode}`
+  }
+
+  getForecastCacheKey(zipcode: string): string {
+      return `forecast_${zipcode}`
   }
 
 }
